@@ -15,7 +15,7 @@
   ],
   "author": "hieudoanm <hieumdoan@gmail.com> (https://hieudoanm.github.io)",
   "license": "GPL-3.0",
-  "packageManager": "pnpm@10.22.0",
+  "packageManager": "pnpm@10.23.0",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/hieudoanm/hieudoanm.github.io.git"
