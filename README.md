@@ -1,1 +1,1 @@
-# Logos
+# BCI - Brain Computer Interface
