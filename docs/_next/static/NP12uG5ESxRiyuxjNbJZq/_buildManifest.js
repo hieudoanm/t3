@@ -13,7 +13,6 @@ self.__BUILD_MANIFEST = {
   "sortedPages": [
     "/",
     "/_app",
-    "/_error",
-    "/api/hello"
+    "/_error"
   ]
 };self.__BUILD_MANIFEST_CB && self.__BUILD_MANIFEST_CB()
