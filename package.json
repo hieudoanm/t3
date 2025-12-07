@@ -1,20 +1,20 @@
 {
-  "name": "@bci/app",
+  "name": "@t3/app",
   "version": "0.0.1",
-  "description": "BCI - Brain Computer Interface",
+  "description": "T3 - Tic-Tac-Toe",
   "keywords": [
-    "bci",
-    "brain",
-    "computer",
-    "interface"
+    "t3",
+    "tic",
+    "tac",
+    "toe"
   ],
-  "homepage": "https://github.com/hieudoanm/bci#readme",
+  "homepage": "https://github.com/hieudoanm/t3#readme",
   "bugs": {
-    "url": "https://github.com/hieudoanm/bci/issues"
+    "url": "https://github.com/hieudoanm/t3/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hieudoanm/bci.git"
+    "url": "git+https://github.com/hieudoanm/t3.git"
   },
   "license": "GPL-3.0",
   "author": "hieudoanm <hieumdoan@gmail.com> (https://hieudoanm.github.io)",

@@ -1,6 +1,17 @@
-import '@bci/styles/globals.css';
+import '@t3/styles/globals.css';
 import type { AppProps } from 'next/app';
+import Head from 'next/head';
+import { FC } from 'react';
 
-export default function App({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />;
-}
+const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
+  return (
+    <>
+      <Head>
+        <title>T3 - Tic-Tac-Toe</title>
+      </Head>
+      <Component {...pageProps} />
+    </>
+  );
+};
+
+export default App;

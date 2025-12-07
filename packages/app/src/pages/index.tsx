@@ -1,73 +1,171 @@
-import Image from 'next/image';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { NextPage } from 'next';
+import { useState } from 'react';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
+type Player = 'X' | 'O';
+type Cell = Player | null;
+type Board = Cell[];
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
+interface Move {
+  player: Player;
+  idx: number;
+}
 
-export default function Home() {
+interface WinResult {
+  player: Player;
+  cells: number[];
+}
+
+const HomePage: NextPage = () => {
+  const WIN: number[][] = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+
+  const [board, setBoard] = useState<Board>(new Array(9).fill(null));
+  const [current, setCurrent] = useState<Player>('X');
+  const [history, setHistory] = useState<{ X: number[]; O: number[] }>({
+    X: [],
+    O: [],
+  });
+  const [moves, setMoves] = useState<Move[]>([]);
+  const [winner, setWinner] = useState<WinResult | null>(null);
+
+  const checkWinner = (b: Board): WinResult | null => {
+    for (const combo of WIN) {
+      const [a, bb, cc] = combo;
+      if (b[a] && b[a] === b[bb] && b[a] === b[cc]) {
+        return { player: b[a], cells: combo };
+      }
+    }
+    return null;
+  };
+
+  const handleClick = (i: number) => {
+    if (board[i] || winner) return;
+
+    const newBoard = [...board];
+    const newHistory = { X: [...history.X], O: [...history.O] };
+    const newMoves = [...moves];
+
+    // Add new move
+    newBoard[i] = current;
+    newHistory[current].push(i);
+    newMoves.push({ player: current, idx: i });
+
+    // Remove oldest if > 3 marks
+    if (newHistory[current].length > 3) {
+      const removed = newHistory[current].shift()!;
+      newBoard[removed] = null;
+
+      for (let k = newMoves.length - 1; k >= 0; k--) {
+        if (newMoves[k].player === current && newMoves[k].idx === removed) {
+          newMoves.splice(k, 1);
+          break;
+        }
+      }
+    }
+
+    const w = checkWinner(newBoard);
+
+    setBoard(newBoard);
+    setHistory(newHistory);
+    setMoves(newMoves);
+    setWinner(w);
+
+    if (!w) setCurrent(current === 'X' ? 'O' : 'X');
+  };
+
+  const reset = () => {
+    setBoard(new Array(9).fill(null));
+    setHistory({ X: [], O: [] });
+    setMoves([]);
+    setCurrent('X');
+    setWinner(null);
+  };
+
+  const undo = () => {
+    if (moves.length === 0 || winner) return;
+
+    const newBoard = [...board];
+    const newHistory = { X: [...history.X], O: [...history.O] };
+    const newMoves = [...moves];
+
+    const last = newMoves.pop()!;
+    if (newBoard[last.idx] === last.player) newBoard[last.idx] = null;
+
+    const arr = newHistory[last.player];
+    for (let i = arr.length - 1; i >= 0; i--) {
+      if (arr[i] === last.idx) {
+        arr.splice(i, 1);
+        break;
+      }
+    }
+
+    setBoard(newBoard);
+    setHistory(newHistory);
+    setMoves(newMoves);
+    setCurrent(last.player);
+    setWinner(null);
+  };
+
   return (
-    <div
-      className={`${geistSans.className} ${geistMono.className} flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black`}>
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between bg-white px-16 py-32 sm:items-start dark:bg-black">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl leading-10 font-semibold tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the index.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{' '}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50">
-              Templates
-            </a>{' '}
-            or the{' '}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50">
-              Learning
-            </a>{' '}
-            center.
-          </p>
+    <div className="bg-base-200 flex min-h-screen items-center justify-center p-6">
+      <div className="card bg-base-100 w-full max-w-sm p-4 shadow-xl">
+        <h1 className="mb-2 text-center text-xl font-bold">T3 - Tic-Tac-Toe</h1>
+        <p className="mb-4 text-sm opacity-70">
+          Each player may have max <strong>3</strong> active marks. When placing
+          the 4th, the <em>oldest</em> one disappears.
+        </p>
+
+        <div className="mb-4 grid grid-cols-3 gap-2">
+          {board.map((v, i) => (
+            <div key={`${v}-${i}`} className="aspect-square w-full">
+              <button
+                onClick={() => handleClick(i)}
+                className={`btn btn-square h-full w-full text-6xl ${
+                  winner?.cells.includes(i) ? 'btn-warning' : 'btn-neutral'
+                }`}>
+                {v}
+              </button>
+            </div>
+          ))}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="bg-foreground text-background flex h-12 w-full items-center justify-center gap-2 rounded-full px-5 transition-colors hover:bg-[#383838] md:w-[158px] dark:hover:bg-[#ccc]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer">
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] md:w-[158px] dark:border-white/[.145] dark:hover:bg-[#1a1a1a]"
-            href="https://nextjs.org/docs/pages/getting-started?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer">
-            Documentation
-          </a>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between text-sm">
+            {winner ? (
+              <div className="text-warning font-semibold">
+                Winner: {winner.player}
+              </div>
+            ) : (
+              <div>
+                Current: <span className="font-semibold">{current}</span>
+              </div>
+            )}
+          </div>
+
+          <div className="text-xs opacity-70">
+            X moves: {history.X.join(', ') || '—'} <br />O moves:{' '}
+            {history.O.join(', ') || '—'}
+          </div>
+
+          <div className="mb-3 flex gap-2">
+            <button onClick={reset} className="btn btn-primary btn-sm">
+              Reset
+            </button>
+            <button onClick={undo} className="btn btn-secondary btn-sm">
+              Undo
+            </button>
+          </div>
         </div>
-      </main>
+      </div>
     </div>
   );
-}
+};
+
+export default HomePage;
