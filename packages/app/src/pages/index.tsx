@@ -58,11 +58,12 @@ const HomePage: NextPage = () => {
     newHistory[current].push(i);
     newMoves.push({ player: current, idx: i });
 
-    // Remove oldest if > 3 marks
+    // If > 3 marks, remove oldest
     if (newHistory[current].length > 3) {
       const removed = newHistory[current].shift()!;
       newBoard[removed] = null;
 
+      // Remove from move history
       for (let k = newMoves.length - 1; k >= 0; k--) {
         if (newMoves[k].player === current && newMoves[k].idx === removed) {
           newMoves.splice(k, 1);
@@ -114,6 +115,10 @@ const HomePage: NextPage = () => {
     setWinner(null);
   };
 
+  // Find the soon-to-disappear index for current player
+  const aboutToDisappear =
+    history[current].length >= 3 ? history[current][0] : null;
+
   return (
     <div className="bg-base-200 flex min-h-screen items-center justify-center p-6">
       <div className="card bg-base-100 w-full max-w-sm p-4 shadow-xl">
@@ -124,18 +129,26 @@ const HomePage: NextPage = () => {
         </p>
 
         <div className="mb-4 grid grid-cols-3 gap-2">
-          {board.map((v, i) => (
-            <div key={`${v}-${i}`} className="aspect-square w-full">
-              <button
-                onClick={() => handleClick(i)}
-                className={`btn btn-square h-full w-full text-6xl ${
-                  winner?.cells.includes(i) ? 'btn-warning' : 'btn-neutral'
-                }`}>
-                {v}
-              </button>
-            </div>
-          ))}
+          {board.map((v, i) => {
+            const isAboutToDisappear = i === aboutToDisappear;
+            const isWin = winner?.cells.includes(i);
+
+            // Color-coded marks
+            const textColor =
+              v === 'X' ? 'text-info' : v === 'O' ? 'text-secondary' : '';
+
+            return (
+              <div key={`${v}-${i}`} className="aspect-square w-full">
+                <button
+                  onClick={() => handleClick(i)}
+                  className={`btn btn-square h-full w-full text-6xl transition-opacity duration-500 ${isWin ? 'btn-warning' : 'btn-neutral'} ${isAboutToDisappear ? 'opacity-30' : 'opacity-100'} ${textColor} `}>
+                  {v}
+                </button>
+              </div>
+            );
+          })}
         </div>
+
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between text-sm">
             {winner ? (
@@ -144,7 +157,8 @@ const HomePage: NextPage = () => {
               </div>
             ) : (
               <div>
-                Current: <span className="font-semibold">{current}</span>
+                Current:{' '}
+                <span className="text-info font-semibold">{current}</span>
               </div>
             )}
           </div>

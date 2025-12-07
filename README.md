@@ -1,1 +1,1 @@
-# BCI - Brain Computer Interface
+# T3 - Tic-Tac-Toe
