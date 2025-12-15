@@ -1,20 +1,17 @@
 {
   "name": "@t3/app",
   "version": "0.0.1",
-  "description": "T3 - Tic-Tac-Toe",
+  "description": "t3",
   "keywords": [
-    "t3",
-    "tic",
-    "tac",
-    "toe"
+    "t3"
   ],
-  "homepage": "https://github.com/hieudoanm/t3#readme",
+  "homepage": "https://hieudoanm.github.io/t3",
   "bugs": {
     "url": "https://github.com/hieudoanm/t3/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hieudoanm/t3.git"
+    "url": "git+ssh://git@github.com/hieudoanm/t3.git"
   },
   "license": "GPL-3.0",
   "author": "hieudoanm <hieumdoan@gmail.com> (https://hieudoanm.github.io)",
@@ -25,6 +22,7 @@
   "scripts": {
     "dev": "turbo run dev",
     "lint": "turbo run lint",
+    "test": "turbo run test",
     "build": "turbo run build",
     "format": "turbo run format",
     "prepare": "husky || true"
