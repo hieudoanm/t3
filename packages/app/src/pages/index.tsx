@@ -135,7 +135,7 @@ const HomePage: NextPage = () => {
 
             // Color-coded marks
             const textColor =
-              v === 'X' ? 'text-info' : v === 'O' ? 'text-secondary' : '';
+              v === 'X' ? 'text-info' : v === 'O' ? 'text-error' : '';
 
             return (
               <div key={`${v}-${i}`} className="aspect-square w-full">
